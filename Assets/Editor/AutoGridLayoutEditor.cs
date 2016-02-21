@@ -7,7 +7,7 @@ using System.Collections;
 [CanEditMultipleObjects]
 public class AutoGridLayoutGroupEditor : Editor
 {
-    SerializedProperty m_bIsColumn;
+    //SerializedProperty m_bIsColumn;
     SerializedProperty m_Column;
     SerializedProperty m_Row;
     SerializedProperty m_Padding;
@@ -18,9 +18,9 @@ public class AutoGridLayoutGroupEditor : Editor
 
     protected virtual void OnEnable()
     {
-        m_bIsColumn = serializedObject.FindProperty("m_IsColumn"); 
+        //m_bIsColumn = serializedObject.FindProperty("m_IsColumn"); 
         m_Column = serializedObject.FindProperty("m_Column");
-        m_Row = serializedObject.FindProperty("m_Row");
+        //m_Row = serializedObject.FindProperty("m_Row");
         m_Padding = serializedObject.FindProperty("m_Padding");
         m_Spacing = serializedObject.FindProperty("m_Spacing");
         m_StartCorner = serializedObject.FindProperty("m_StartCorner");
@@ -31,17 +31,17 @@ public class AutoGridLayoutGroupEditor : Editor
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-        EditorGUILayout.PropertyField(m_bIsColumn, true);
-        if (!m_bIsColumn.hasMultipleDifferentValues) {
-            if (m_bIsColumn.boolValue)
-            {
+        //EditorGUILayout.PropertyField(m_bIsColumn, true);
+        //if (!m_bIsColumn.hasMultipleDifferentValues) {
+            //if (m_bIsColumn.boolValue)
+            //{
                 EditorGUILayout.PropertyField(m_Column, true);
-            }
-            else
-            {
-                EditorGUILayout.PropertyField(m_Row, true);
-            }
-        }
+            //}
+            //else
+            //{
+            //    EditorGUILayout.PropertyField(m_Row, true);
+            //}
+        //}
         
         EditorGUILayout.PropertyField(m_Padding, true);
         EditorGUILayout.PropertyField(m_Spacing, true);
