@@ -1,16 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
-    public ColliderHandler colliderHandler;
-    public CellHandler cellHandler;
+    [SerializeField]
+    AutoGridLayout grid;
 
-    public GameObject grid;
-    public GameObject cell;
-
-    public Color cellOffColor = new Color(0.53f, 0.8f, 0.77f);
-    public Color cellOnColor = Color.yellow;
+    [SerializeField]
+    GameObject cell;
 
     public static GameManager Instance;
 
@@ -21,12 +19,11 @@ public class GameManager : MonoBehaviour {
 
     void OnEnable()
     {
-        cell.gameObject.GetComponent<Image>().color = cellOffColor;
+        var cellCount = grid.m_Column * grid.m_Column;
 
-        var gridSize = 25;
-
-        for(var i=1; i<= gridSize; i++) {
-            GameObject cellClone = (GameObject)Instantiate(cell, new Vector3(1,1, 1), Quaternion.identity);
+        for (var i = 1; i <= cellCount; i++)
+        {
+            GameObject cellClone = (GameObject)Instantiate(cell, new Vector3(1, 1, 1), Quaternion.identity);
             cellClone.transform.SetParent(grid.transform);
             cellClone.transform.localScale = new Vector3(1, 1, 1);
         }
