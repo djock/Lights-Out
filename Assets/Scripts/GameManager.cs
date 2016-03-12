@@ -10,10 +10,11 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     GameObject cell;
 
-    private GameObject cellClone;
-    Dictionary<int, int> cellArray = new Dictionary<int, int>();
+	public CellHandler cellHandler;
+	public static GameManager Instance;
 
-    public static GameManager Instance;
+	Dictionary<int, int> cellArray = new Dictionary<int, int>();
+    GameObject cellClone;
 
     void Awake()
     {
@@ -39,12 +40,23 @@ public class GameManager : MonoBehaviour {
                 cellClone.transform.localScale = new Vector3(1, 1, 1);
                 cellClone.name = "Cell[" + i + "][" + j + "]";
                 cellArray[i] = j;
-                Debug.LogError(i, j);
+
+				SetCellColor ();
             }
         }
-        foreach(KeyValuePair<int, int> entry in cellArray)
-        {
-            Debug.LogError(entry);   
-        }
+
     }
+
+	void SetCellColor() {
+		var rand = Random.Range (0,2);
+
+		if (rand <= 0.5) {
+			cellHandler.cellStatus = CellHandler.Status.On;
+			cellClone.GetComponent<CanvasRenderer> ().SetColor (new Color32 (135, 204, 196, 255));
+		} else {
+			cellHandler.cellStatus = CellHandler.Status.Off;
+			cellClone.GetComponent<CanvasRenderer>().SetColor (new Color32 (128, 128, 128, 128));
+		}
+	}
+
 }
