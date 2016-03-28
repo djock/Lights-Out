@@ -5,16 +5,22 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
-    [SerializeField]
-    AutoGridLayout grid;
-    [SerializeField]
-    GameObject cell;
+	[Header("Game Elements")]
+	public AutoGridLayout grid;
+	public GameObject cell;
+	public UIGame uiGame;
 
-	public CellHandler cellHandler;
+	[Header("Game Stats")]
+	public int movesMade = 0;
+	public int timeElapsed = 0;
+
 	public static GameManager Instance;
 
-	Dictionary<int, int> cellArray = new Dictionary<int, int>();
+	public GameObject[,] cellArray;
+	public List<GameObject> cellList;
+
     GameObject cellClone;
+	CellHandler cellHandler;
 
     void Awake()
     {
@@ -23,39 +29,68 @@ public class GameManager : MonoBehaviour {
 
     void OnEnable()
     {
-        GenerateGrid(5);
+		uiGame.endingText.gameObject.SetActive (false);
+		StartCoroutine (GenerateGrid(2));
+		CountElapsedTime ();
     }
 
-    void GenerateGrid(int columnCount)
+	IEnumerator GenerateGrid(int columnCount)
     {
+		grid.m_Column = columnCount;
+		cellArray = new GameObject[columnCount*columnCount, columnCount*columnCount];
+		yield return new WaitForEndOfFrame ();
 
-        grid.m_Column = columnCount;
-
-        for (var i = 1; i <= columnCount; i++)
+        for (var i = 0; i < columnCount; i++)
         {
-            for(var j = 1; j <= columnCount; j++)
+            for(var j = 0; j < columnCount; j++)
             {
-                cellClone = (GameObject)Instantiate(cell, new Vector3(1, 1, 1), Quaternion.identity);
-                cellClone.transform.SetParent(grid.transform);
-                cellClone.transform.localScale = new Vector3(1, 1, 1);
-                cellClone.name = "Cell[" + i + "][" + j + "]";
-                cellArray[i] = j;
+				cellArray[i,j] = (GameObject)Instantiate(cell, new Vector3(1, 1, 1), Quaternion.identity);
+				cellArray[i,j].transform.SetParent(grid.transform);
+				cellArray[i,j].transform.localScale = new Vector3(1, 1, 1);
+				cellArray[i,j].name = "Cell[" + i + "][" + j + "]";
 
-				SetCellColor ();
+				cellList.Add (cellArray[i,j]);
+
+				cellHandler = cellArray[i,j].GetComponent<CellHandler> ();
+				cellHandler.CoordX = i;
+				cellHandler.CoordY = j;
+
+				// Add color:
+				var rand = Random.Range (0,2);
+
+				if (rand == 1) {
+					cellHandler.cellStatus = CellHandler.Status.On; 
+					cellArray[i,j].GetComponent<CanvasRenderer> ().SetColor (new Color32 (135, 204, 196, 255));
+				} else {
+					cellHandler.cellStatus = CellHandler.Status.Off;
+					cellArray[i,j].GetComponent<CanvasRenderer>().SetColor (new Color32 (128, 128, 128, 128));
+				}
             }
         }
-
     }
 
-	void SetCellColor() {
-		var rand = Random.Range (0,2);
+	public void CountElapsedTime()
+	{
+		InvokeRepeating("elapsedTime", 1f, 1f);
+	}
+	void elapsedTime()
+	{
+		timeElapsed += 1;
 
-		if (rand <= 0.5) {
-			cellHandler.cellStatus = CellHandler.Status.On;
-			cellClone.GetComponent<CanvasRenderer> ().SetColor (new Color32 (135, 204, 196, 255));
-		} else {
-			cellHandler.cellStatus = CellHandler.Status.Off;
-			cellClone.GetComponent<CanvasRenderer>().SetColor (new Color32 (128, 128, 128, 128));
+	}
+
+	public void CheckIfGameIsFinished() {
+
+		var offCell = 0;
+
+		foreach (var item in cellList) {
+			if (item.GetComponent<CellHandler> ().cellStatus == CellHandler.Status.Off) {
+				offCell++;
+				Debug.LogError (item.gameObject.name + " " + offCell);
+			}
+		}
+		if (offCell == grid.m_Column * grid.m_Column) {
+			uiGame.endingText.transform.gameObject.SetActive (true);
 		}
 	}
 
